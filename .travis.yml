@@ -4,7 +4,9 @@ services:
   - 'docker'
 
 env:
-  - DOCKER_REPO='timmlifford'
+  - DOCKER_REPO='timmclifford'
+  - BUILD_NUMBER='1'
+  - GIT_BRANCH=master
 
 before_install:
   - './.travis/main.sh'
