@@ -1,6 +1,13 @@
 FROM cypress/base:10
 
+RUN node -v
+RUN npm -v
+
+COPY . /app/
+
 RUN npm install --save-dev cypress
 
 RUN $(npm bin)/cypress verify
-RUN $(npm bin)/cypress install
+#RUN $(npm bin)/cypress install
+
+ENTRYPOINT ["/node_modules/.bin/cypress"]

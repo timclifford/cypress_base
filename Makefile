@@ -24,15 +24,16 @@ images_set_build_variables: images_check_env
 # This target will build out the images, passing the correct environment vars to fill out repo and tags
 .PHONY: build
 build: images_set_build_variables
-	docker build --no-cache --tag $$DOCKER_REPO/cypress-base:latest cypress-base
+	DOCKER_REPO=$$DOCKER_REPO BUILDTAG=$(docker_build_tag) docker-compose build --no-cache
 
 .PHONY: test
-test: images_start
-	docker-compose run --rm e2e npm run cypress:verify
+test: images_set_build_variables
+	DOCKER_REPO=$$DOCKER_REPO BUILDTAG=$(docker_build_tag) docker-compose run --rm e2e version
+	DOCKER_REPO=$$DOCKER_REPO BUILDTAG=$(docker_build_tag) docker-compose run --rm e2e verify
 
 # This target will iterate through all images and tags, pushing up versions of all with approriate tags
-.PHONY: publish
-publish: images_set_build_variables
+.PHONY: publish_images
+publish_images: images_set_build_variables
 	TAGSFORBRANCH=""; \
 	if [ $(GIT_BRANCH) = "master" ]; then \
 		TAGSFORBRANCH="master";\
@@ -41,12 +42,13 @@ publish: images_set_build_variables
 		TAGSFORBRANCH="develop";\
 	fi; \
 	if [ "$(git_latest_tag)" = "$(git_tag_for_current_branch)" ]; then TAGSFORBRANCH="$(TAGSFORBRANCH) latest"; fi; \
+	echo "$(shell git tag --points-at)"; \
 	echo $$TAGSFORBRANCH; \
 	for repository in $(tagged_image_list); do \
 		for tagname in $$TAGSFORBRANCH $(git_tag_for_current_branch); do \
 			echo "pushing " $$repository:$$tagname; \
 			docker tag $$repository:$(docker_build_tag) $$repository:$$tagname; \
-			docker push $$repository:$$tagname; \
+			#docker push $$repository:$$tagname; \
 		done; \
 	done
 

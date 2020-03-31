@@ -4,7 +4,7 @@ services:
   - 'docker'
 
 env:
-  - DOCKER_REPO='algmprivsecops'
+  - DOCKER_REPO='timmlifford'
 
 before_install:
   - './.travis/main.sh'
@@ -15,18 +15,8 @@ script:
 
 after_success:
   - if [[ "$TRAVIS_BRANCH" == "master" ]]; then
-      docker login -u $dockerhub_username -p $dockerhub_password ;
-      docker push dkrud5g/docker-cypress ;
+      docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD && make publish_images && make remove
     fi
 
 notifications:
   email: false
-
-# To have `DOCKER_USERNAME` and `DOCKER_PASSWORD`
-# use `travis env set DOCKER_USERNAME ...`
-# use `travis env set DOCKER_PASSWORD ...`
-deploy:
-  provider: script
-  script: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD && make publish && make remove
-  on:
-    branch: master

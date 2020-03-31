@@ -4,3 +4,4 @@ services:
     build:
       context: .
       dockerfile: cypress.Dockerfile
+    image: $DOCKER_REPO/cypress_base:$BUILDTAG
