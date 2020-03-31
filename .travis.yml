@@ -1,0 +1,32 @@
+sudo: 'required'
+
+services:
+  - 'docker'
+
+env:
+  - DOCKER_REPO='algmprivsecops'
+
+before_install:
+  - './.travis/main.sh'
+
+script:
+  - 'make build'
+  - 'make test'
+
+after_success:
+  - if [[ "$TRAVIS_BRANCH" == "master" ]]; then
+      docker login -u $dockerhub_username -p $dockerhub_password ;
+      docker push dkrud5g/docker-cypress ;
+    fi
+
+notifications:
+  email: false
+
+# To have `DOCKER_USERNAME` and `DOCKER_PASSWORD`
+# use `travis env set DOCKER_USERNAME ...`
+# use `travis env set DOCKER_PASSWORD ...`
+deploy:
+  provider: script
+  script: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD && make publish && make remove
+  on:
+    branch: master
