@@ -15,7 +15,7 @@ script:
 
 after_success:
   - echo $TRAVIS_BRANCH
-  - if [ "$TRAVIS_BRANCH" == "master" ]; then docker login -u $DOCKER_USERNAME --password $DOCKER_PASSWORD; docker push $DOCKER_REPO/cypress_base:$TRAVIS_BUILD_NUMBER; fi
+  - if [ "$TRAVIS_BRANCH" == "master" ]; then echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin; docker push $DOCKER_REPO/cypress_base:latest; fi
 
 notifications:
   email: false
