@@ -1,4 +1,4 @@
-FROM cypress/base:10
+FROM cypress/base:16
 
 RUN node -v
 RUN npm -v
